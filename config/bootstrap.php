@@ -1,10 +1,10 @@
 <?php
 use Cake\Core\Configure;
-
 /**
- * Automatically load app's backend configuration
+ * Automatically load app's upload configuration
  *
- * Copy backend.default.php to your app's config folder,
- * rename to backend.php and adjust contents
+ * Copy upload.default.php to your app's config folder,
+ * rename to upload.php and adjust contents
  */
+//@TODO Fallback to default upload configuration
 Configure::load('upload');
