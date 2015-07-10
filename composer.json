@@ -1,0 +1,23 @@
+{
+    "name": "fm-labs/cakephp3-upload",
+    "description": "Upload plugin for CakePHP",
+    "type": "cakephp-plugin",
+    "require": {
+        "php": ">=5.4",
+        "cakephp/cakephp": "~3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Upload\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Upload\\Test\\": "tests",
+            "Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
+        }
+    }
+}
