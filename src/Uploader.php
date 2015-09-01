@@ -1,11 +1,16 @@
 <?php
-//App::uses('self', 'Media.Lib');
 namespace Upload;
 
-use Cake\Utility\Inflector;
 use Cake\Core\Configure;
+use Cake\Utility\Inflector;
 use Upload\Exception\UploadException;
 
+/**
+ * Class Uploader
+ * @package Upload
+ *
+ * @todo Refactor with InstanceConfigTrait
+ */
 class Uploader
 {
     const UPLOAD_ERR_MIN_FILE_SIZE = 100;
@@ -54,6 +59,11 @@ class Uploader
         // Fallback upload dir
         if (!isset($config['uploadDir'])) {
             $config['uploadDir'] = TMP . 'uploads' . DS;
+        }
+
+        // Validate upload dir
+        if (!is_dir($config['uploadDir']) || !is_writable($config['uploadDir'])) {
+            throw new \Exception(__d('upload', 'Upload directory not writeable: {0}', $config['uploadDir']));
         }
 
         $this->config($config);
