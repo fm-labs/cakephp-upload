@@ -134,7 +134,7 @@ class UploaderTest extends UploadPluginTestCase
             'hashFilename' => false,
             'uniqueFilename' => true,
             'overwrite' => false,
-            'filename' => null,
+            'saveAs' => null,
             //'pattern' => '',
         ];
         $this->assertEquals($expected, $this->uploader()->config());
@@ -349,7 +349,7 @@ class UploaderTest extends UploadPluginTestCase
             'overwrite' => false,
             'uniqueFilename' => false,
             'hashFilename' => false,
-            'filename' => 'test.file'
+            'saveAs' => 'test.file'
         ]);
         $result = $Uploader->upload();
 

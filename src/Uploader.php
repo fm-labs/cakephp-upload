@@ -313,11 +313,11 @@ class Uploader
 
         // filename override
         if ($config['saveAs']) {
-            list($filename,,) = self::splitBasename($config['saveAs']);
+            list($filename, $ext, $dotExt) = self::splitBasename($config['saveAs']);
         }
 
         // hash filename
-        if ($config['hashFilename'] && !$config['filename']) {
+        if ($config['hashFilename'] && !$config['saveAs']) {
             $filename = sha1($filename);
         }
 
