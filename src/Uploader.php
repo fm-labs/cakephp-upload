@@ -51,9 +51,8 @@ class Uploader
         // Load config
         if (is_string($config) && !Configure::check('Upload.' . $config)) {
             throw new \Exception(__d('upload', 'Invalid Upload Configuration: {0}', $config));
-
         } elseif (is_string($config)) {
-            $config = (array) Configure::read('Upload.' . $config);
+            $config = (array)Configure::read('Upload.' . $config);
         }
 
         // Fallback upload dir
@@ -82,20 +81,18 @@ class Uploader
     {
         if ($key === null) {
             return $this->_config;
-
         } elseif (is_array($key)) {
             foreach ($key as $_k => $_v) {
                 $this->config($_k, $_v);
             }
-            return $this;
 
+            return $this;
         } elseif (is_string($key) && $val !== null) {
             $this->_config[$key] = $val;
-            return $this;
 
+            return $this;
         } elseif (is_string($key) && array_key_exists($key, $this->_config)) {
             return $this->_config[$key];
-
         } else {
             throw new \InvalidArgumentException('Uploader: Invalid config key ' . $key);
         }
@@ -112,6 +109,7 @@ class Uploader
     public function setData($data = [])
     {
         $this->_data = $data;
+
         return $this;
     }
 
@@ -233,14 +231,13 @@ class Uploader
         try {
             $this->_validateUpload($upload);
             $result = $this->_processUpload($upload);
-
         } catch (\Exception $ex) {
-
             if ($throwExceptions === true) {
                 throw $ex;
             }
 
             $upload['upload_err'] = $ex->getMessage();
+
             return $upload;
         }
 
@@ -272,10 +269,8 @@ class Uploader
         // validate size limits and mime type
         if ($upload['size'] < $config['minFileSize']) {
             throw new UploadException(self::UPLOAD_ERR_MIN_FILE_SIZE);
-
         } elseif ($upload['size'] > $config['maxFileSize']) {
             throw new UploadException(self::UPLOAD_ERR_MAX_FILE_SIZE);
-
         } elseif (!self::validateMimeType($upload['type'], $config['mimeTypes'])) {
             throw new UploadException(self::UPLOAD_ERR_MIME_TYPE);
         }
@@ -356,12 +351,11 @@ class Uploader
         } else {
             if (!copy($upload['tmp_name'], $target)) {
                 throw new UploadException(self::UPLOAD_ERR_STORE_UPLOAD);
-
             }
         }
 
         //@TODO Return UploadFile object instance
-        $uploadedFile = array(
+        $uploadedFile = [
             'name' => $upload['name'],  // file.txt
             'type' => $upload['type'],  // text/plain
             'size' => $upload['size'],  // 1234 bytes
@@ -371,7 +365,7 @@ class Uploader
             'ext' => $ext,              // txt
             'dotExt' => $dotExt,        // .txt
             'ts' => time(),
-        );
+        ];
 
         //@TODO Fire event 'Upload.afterUpload'
         return $uploadedFile;
@@ -394,8 +388,7 @@ class Uploader
             $filename = $basename;
         }
 
-        return array($filename, $ext, $dotExt);
-
+        return [$filename, $ext, $dotExt];
     }
 
     /**
@@ -408,13 +401,13 @@ class Uploader
      * @param array|string $allowed List of allowed mime types
      * @return boolean
      */
-    public static function validateMimeType($mime, $allowed = array())
+    public static function validateMimeType($mime, $allowed = [])
     {
         if (is_string($allowed)) {
             if ($allowed == "*") {
                 return true;
             } else {
-                $allowed = array($allowed);
+                $allowed = [$allowed];
             }
         }
 
@@ -441,13 +434,13 @@ class Uploader
      * @param array|string $allowed List of allowed extensions. Use '*' for all extensions
      * @return boolean
      */
-    public static function validateFileExtension($ext, $allowed = array())
+    public static function validateFileExtension($ext, $allowed = [])
     {
         if (is_string($allowed)) {
             if ($allowed == "*") {
                 return true;
             } else {
-                $allowed = array($allowed);
+                $allowed = [$allowed];
             }
         }
 

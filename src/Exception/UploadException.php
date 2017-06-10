@@ -19,7 +19,7 @@ class UploadException extends Exception
      */
     public static function mapErrorMessage($errCode)
     {
-        $errors = array(
+        $errors = [
             UPLOAD_ERR_OK => __d('upload', "Upload successful"),
             UPLOAD_ERR_INI_SIZE => __d('upload', "Maximum ini file size exceeded (%s)", ini_get('upload_max_filesize')),
             UPLOAD_ERR_FORM_SIZE => __d('upload', "Maximum form file size exceeded"),
@@ -34,7 +34,7 @@ class UploadException extends Exception
             Uploader::UPLOAD_ERR_MIN_FILE_SIZE => __d('upload', "Minimum file size error"),
             Uploader::UPLOAD_ERR_MAX_FILE_SIZE => __d('upload', "Maximum file size exceeded"),
             Uploader::UPLOAD_ERR_STORE_UPLOAD => __d('upload', "Failed to store uploaded file"),
-        );
+        ];
 
         if (isset($errors[$errCode])) {
             return $errors[$errCode];
