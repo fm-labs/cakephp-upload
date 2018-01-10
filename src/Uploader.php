@@ -303,8 +303,11 @@ class Uploader
         //@TODO Fire event 'Upload.beforeUpload'
 
         // filename
-        list($filename, $ext, $dotExt) = self::splitBasename(trim($upload['name']));
+        $uploadName = strtolower(trim($upload['name']));
+        list($filename, $ext, $dotExt) = self::splitBasename($uploadName);
         $filename = Inflector::slug($filename, $config['slug']);
+        $ext = strtolower($ext);
+        $dotExt = strtolower($dotExt);
 
         // filename override
         if ($config['saveAs']) {
@@ -330,7 +333,7 @@ class Uploader
             $i = 0;
             $_filename = $filename;
             do {
-                $filename = $_filename . '_' . ++$i;
+                $filename = $_filename . '__' . ++$i;
                 $basename = $filename . $dotExt;
                 $target = $path . $basename;
             } while (file_exists($target) === true);
@@ -407,7 +410,7 @@ class Uploader
             if ($allowed == "*") {
                 return true;
             } else {
-                $allowed = [$allowed];
+                $allowed = array_map('strtolower', explode(',', $allowed));
             }
         }
 
@@ -440,10 +443,10 @@ class Uploader
             if ($allowed == "*") {
                 return true;
             } else {
-                $allowed = [$allowed];
+                $allowed = array_map('strtolower', explode(',', $allowed));
             }
         }
 
-        return in_array($ext, $allowed);
+        return in_array(strtolower($ext), $allowed);
     }
 }
