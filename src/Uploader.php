@@ -2,17 +2,18 @@
 namespace Upload;
 
 use Cake\Core\Configure;
+use Cake\Core\InstanceConfigTrait;
 use Cake\Utility\Inflector;
 use Upload\Exception\UploadException;
 
 /**
  * Class Uploader
  * @package Upload
- *
- * @todo Refactor with InstanceConfigTrait
  */
 class Uploader
 {
+    use InstanceConfigTrait;
+
     const UPLOAD_ERR_MIN_FILE_SIZE = 100;
     const UPLOAD_ERR_MAX_FILE_SIZE = 101;
     const UPLOAD_ERR_MIME_TYPE = 102;
@@ -20,7 +21,7 @@ class Uploader
     const UPLOAD_ERR_FILE_EXISTS = 104;
     const UPLOAD_ERR_STORE_UPLOAD = 105;
 
-    protected $_config = [
+    protected $_defaultConfig = [
         'uploadDir' => null,
         'minFileSize' => 1,
         'maxFileSize' => 2097152, // 2MB
@@ -46,7 +47,7 @@ class Uploader
      * @param null  $data
      * @throws \Exception
      */
-    public function __construct($config = [], $data = null)
+    public function __construct($config = [])
     {
         // Load config
         if (is_string($config) && !Configure::check('Upload.' . $config)) {
@@ -66,7 +67,6 @@ class Uploader
         }
 
         $this->config($config);
-        $this->setData($data);
     }
 
     /**
@@ -76,26 +76,41 @@ class Uploader
      * @param null $val
      * @return $this|mixed
      * @throws \InvalidArgumentException
+     * @deprecated use InstanceConfigTrait methods instead
      */
-    public function config($key = null, $val = null)
+//    public function config($key = null, $val = null)
+//    {
+//        if ($key === null) {
+//            return $this->_config;
+//        } elseif (is_array($key)) {
+//            foreach ($key as $_k => $_v) {
+//                $this->config($_k, $_v);
+//            }
+//
+//            return $this;
+//        } elseif (is_string($key) && $val !== null) {
+//            $this->_config[$key] = $val;
+//
+//            return $this;
+//        } elseif (is_string($key) && array_key_exists($key, $this->_config)) {
+//            return $this->_config[$key];
+//        } else {
+//            throw new \InvalidArgumentException('Uploader: Invalid config key ' . $key);
+//        }
+//    }
+
+    /**
+     * Upload data setter
+     * Only for testing purposes. Pass upload data to the upload() method instead.
+     *
+     * @param $data
+     * @return $this
+     */
+    public function setUploadData(array $data = [])
     {
-        if ($key === null) {
-            return $this->_config;
-        } elseif (is_array($key)) {
-            foreach ($key as $_k => $_v) {
-                $this->config($_k, $_v);
-            }
+        $this->_data = $data;
 
-            return $this;
-        } elseif (is_string($key) && $val !== null) {
-            $this->_config[$key] = $val;
-
-            return $this;
-        } elseif (is_string($key) && array_key_exists($key, $this->_config)) {
-            return $this->_config[$key];
-        } else {
-            throw new \InvalidArgumentException('Uploader: Invalid config key ' . $key);
-        }
+        return $this;
     }
 
     /**
@@ -104,19 +119,17 @@ class Uploader
      * @param $data
      * @return $this
      *
-     * @deprecated Pass data directly to upload method
+     * @deprecated use setUploadData() instead
      */
     public function setData($data = [])
     {
-        $this->_data = $data;
-
-        return $this;
+        return $this->setUploadData($data);
     }
 
     /**
      * Upload dir setter
      *
-     * @param $dir Absolute path to upload directory
+     * @param string $dir Absolute path to upload directory
      * @return $this
      * @throws \Exception
      */
@@ -126,7 +139,8 @@ class Uploader
             throw new \Exception(__d('upload', 'Upload directory not writable'));
         }
 
-        return $this->config('uploadDir', $dir);
+        $this->config('uploadDir', $dir);
+        return $this;
     }
 
     /**
@@ -137,7 +151,8 @@ class Uploader
      */
     public function setMinFileSize($sizeInBytes)
     {
-        return $this->config('minFileSize', (int)$sizeInBytes);
+        $this->config('minFileSize', (int)$sizeInBytes);
+        return $this;
     }
 
     /**
@@ -148,18 +163,32 @@ class Uploader
      */
     public function setMaxFileSize($sizeInBytes)
     {
-        return $this->config('maxFileSize', (int)$sizeInBytes);
+        $this->config('maxFileSize', (int)$sizeInBytes);
+        return $this;
     }
 
     /**
      * Allowed upload file mime type(s)
      *
-     * @param string|array $type
+     * @param string|array $val
      * @return $this
      */
-    public function setMimeTypes($type)
+    public function setMimeTypes($val)
     {
-        $this->config('mimeTypes', $type);
+        $this->config('mimeTypes', $val);
+        return $this;
+    }
+
+    /**
+     * Override the target filename
+     *
+     * @param string $val Filename with file extension
+     * @return $this
+     */
+    public function setSaveAs($val)
+    {
+        $this->config('saveAs', $val);
+        return $this;
     }
 
     /**
@@ -170,7 +199,8 @@ class Uploader
      */
     public function setFileExtensions($ext)
     {
-        return $this->config('fileExtensions', $ext);
+        $this->config('fileExtensions', $ext);
+        return $this;
     }
 
     /**
@@ -181,7 +211,8 @@ class Uploader
      */
     public function enableHashFilename($enable)
     {
-        return $this->config('hashFilename', (bool)$enable);
+        $this->config('hashFilename', (bool)$enable);
+        return $this;
     }
 
     /**
@@ -192,7 +223,8 @@ class Uploader
      */
     public function enableUniqueFilename($enable)
     {
-        return $this->config('uniqueFilename', (bool)$enable);
+        $this->config('uniqueFilename', (bool)$enable);
+        return $this;
     }
 
     /**
