@@ -62,9 +62,9 @@ class Uploader
         }
 
         // Validate upload dir
-        if (!is_dir($config['uploadDir']) || !is_writable($config['uploadDir'])) {
-            throw new \Exception(__d('upload', 'Upload directory not writeable: {0}', $config['uploadDir']));
-        }
+        //if (!is_dir($config['uploadDir']) || !is_writable($config['uploadDir'])) {
+        //    throw new \Exception(__d('upload', 'Upload directory not writeable: {0}', $config['uploadDir']));
+        //}
 
         $this->config($config);
     }
