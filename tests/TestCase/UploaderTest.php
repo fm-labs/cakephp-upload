@@ -34,6 +34,9 @@ class UploaderTest extends UploadPluginTestCase
 
         // setup test upload dir
         $this->UploadFolder = new Folder($this->uploadDir, true, 0777);
+        if (!is_dir($this->uploadDir)) {
+            $this->fail('Failed to create test upload dir in ' . $this->uploadDir);
+        }
 
         // setup dummy upload files
         $this->upload1 = array(
@@ -108,17 +111,17 @@ class UploaderTest extends UploadPluginTestCase
 
     public function testStaticValidateMimeType()
     {
-        $this->skipIf(true, 'Implement me: ' . __FUNCTION__);
+        $this->markTestIncomplete('Implement me: ' . __FUNCTION__);
     }
 
     public function testStaticValidateFileExtension()
     {
-        $this->skipIf(true, 'Implement me: ' . __FUNCTION__);
+        $this->markTestIncomplete('Implement me: ' . __FUNCTION__);
     }
 
     public function testStaticSplitBasename()
     {
-        $this->skipIf(true, 'Implement me: ' . __FUNCTION__);
+        $this->markTestIncomplete('Implement me: ' . __FUNCTION__);
     }
 
     public function testDefaultConfig()
@@ -270,8 +273,8 @@ class UploaderTest extends UploadPluginTestCase
         $this->assertTrue(file_exists($result['path']));
         $this->assertEquals('txt', $result['ext']);
         $this->assertEquals('.txt', $result['dotExt']);
-        $this->assertEquals(1, preg_match('/Upload_File_1_([0-9a-z]+).txt$/', $result['basename']));
-        $this->assertEquals(1, preg_match('/Upload_File_1_([0-9a-z]+)$/', $result['filename']));
+        $this->assertEquals(1, preg_match('/upload_file_1_([0-9a-z]+).txt$/', $result['basename']));
+        $this->assertEquals(1, preg_match('/upload_file_1_([0-9a-z]+)$/', $result['filename']));
     }
 
     public function testUploadOverwrite()

@@ -47,7 +47,7 @@ class Uploader
      * @param null  $data
      * @throws \Exception
      */
-    public function __construct($config = [])
+    public function __construct($config = [], $data = null)
     {
         // Load config
         if (is_string($config) && !Configure::check('Upload.' . $config)) {
@@ -67,6 +67,7 @@ class Uploader
         //}
 
         $this->config($config);
+        $this->setData($data);
     }
 
     /**
@@ -243,7 +244,7 @@ class Uploader
 
         if ($this->_config['multiple']) {
             $this->_result = [];
-            foreach ($uploadData as $upload) {
+            foreach ((array) $uploadData as $upload) {
                 $this->_result[] = $this->_upload($upload, $options['exceptions']);
             }
         } else {
