@@ -47,7 +47,7 @@ class Uploader
      * @param null  $data
      * @throws \Exception
      */
-    public function __construct($config = [], $data = null)
+    public function __construct($config = [], array $data = [])
     {
         // Load config
         if (is_string($config) && !Configure::check('Upload.' . $config)) {
@@ -243,10 +243,7 @@ class Uploader
         $options = array_merge(['exceptions' => false], $options);
 
         if ($this->_config['multiple']) {
-            $this->_result = [];
-            foreach ((array) $uploadData as $upload) {
-                $this->_result[] = $this->_upload($upload, $options['exceptions']);
-            }
+            $this->_result = $this->_uploadMultiple($uploadData, $options['exceptions']);
         } else {
             $this->_result = $this->_upload($uploadData, $options['exceptions']);
         }
@@ -259,19 +256,29 @@ class Uploader
         return $this->_result;
     }
 
-    protected function _upload($upload, $throwExceptions = false)
+    protected function _uploadMultiple($data, $throwExceptions = false)
+    {
+        $result = [];
+        foreach ($data as $_data) {
+            $result[] = $this->_upload($_data, $throwExceptions);
+        }
+
+        return $result;
+    }
+
+    protected function _upload($data, $throwExceptions = false)
     {
         try {
-            $this->_validateUpload($upload);
-            $result = $this->_processUpload($upload);
+            $this->_validateUpload($data);
+            $result = $this->_processUpload($data);
         } catch (\Exception $ex) {
             if ($throwExceptions === true) {
                 throw $ex;
             }
 
-            $upload['upload_err'] = $ex->getMessage();
+            $data['upload_err'] = $ex->getMessage();
 
-            return $upload;
+            return $data;
         }
 
         return $result;
@@ -394,7 +401,7 @@ class Uploader
         $uploadedFile = [
             'name' => $upload['name'],  // file.txt
             'type' => $upload['type'],  // text/plain
-            'size' => $upload['size'],  // 1234 bytes
+            'size' => $upload['size'],  // 1234 (bytes)
             'path' => $target,          // /path/to/uploaded/file
             'basename' => $basename,    // file.txt
             'filename' => $filename,    // file
