@@ -3,6 +3,7 @@ namespace Upload;
 
 use Cake\Core\Configure;
 use Cake\Core\InstanceConfigTrait;
+use Cake\Log\Log;
 use Cake\Utility\Inflector;
 use Upload\Exception\UploadException;
 
@@ -369,6 +370,8 @@ class Uploader
 
         // build target file path
         $target = $path . $basename;
+        Log::debug("Uploading file to $path", 'upload');
+
         if (file_exists($target) && $config['overwrite'] !== true) {
             $i = 0;
             $_filename = $filename;
@@ -378,6 +381,7 @@ class Uploader
                 $target = $path . $basename;
             } while (file_exists($target) === true);
         }
+        Log::debug("Saving uploaded file to $target", 'upload');
 
         //debug("Is Uploaded: " . is_uploaded_file($upload['tmp_name']));
         //debug("Move uploaded file from " . $upload['tmp_name'] . " to " . $target);
