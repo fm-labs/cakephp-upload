@@ -1,5 +1,5 @@
 {
-    "name": "fm-labs/cakephp3-upload",
+    "name": "fm-labs/cakephp-upload",
     "description": "Upload plugin for CakePHP",
     "type": "cakephp-plugin",
     "require": {
