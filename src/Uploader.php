@@ -4,7 +4,7 @@ namespace Upload;
 use Cake\Core\Configure;
 use Cake\Core\InstanceConfigTrait;
 use Cake\Log\Log;
-use Cake\Utility\Inflector;
+use Cake\Utility\Text;
 use Upload\Exception\UploadException;
 
 /**
@@ -67,7 +67,7 @@ class Uploader
         //    throw new \Exception(__d('upload', 'Upload directory not writeable: {0}', $config['uploadDir']));
         //}
 
-        $this->config($config);
+        $this->setConfig($config);
         $this->setData($data);
     }
 
@@ -141,7 +141,7 @@ class Uploader
             throw new \Exception(__d('upload', 'Upload directory not writable'));
         }
 
-        $this->config('uploadDir', $dir);
+        $this->setConfig('uploadDir', $dir);
         return $this;
     }
 
@@ -153,7 +153,7 @@ class Uploader
      */
     public function setMinFileSize($sizeInBytes)
     {
-        $this->config('minFileSize', (int)$sizeInBytes);
+        $this->setConfig('minFileSize', (int)$sizeInBytes);
         return $this;
     }
 
@@ -165,7 +165,7 @@ class Uploader
      */
     public function setMaxFileSize($sizeInBytes)
     {
-        $this->config('maxFileSize', (int)$sizeInBytes);
+        $this->setConfig('maxFileSize', (int)$sizeInBytes);
         return $this;
     }
 
@@ -177,7 +177,7 @@ class Uploader
      */
     public function setMimeTypes($val)
     {
-        $this->config('mimeTypes', $val);
+        $this->setConfig('mimeTypes', $val);
         return $this;
     }
 
@@ -189,7 +189,7 @@ class Uploader
      */
     public function setSaveAs($val)
     {
-        $this->config('saveAs', $val);
+        $this->setConfig('saveAs', $val);
         return $this;
     }
 
@@ -201,7 +201,7 @@ class Uploader
      */
     public function setFileExtensions($ext)
     {
-        $this->config('fileExtensions', $ext);
+        $this->setConfig('fileExtensions', $ext);
         return $this;
     }
 
@@ -213,7 +213,7 @@ class Uploader
      */
     public function enableHashFilename($enable)
     {
-        $this->config('hashFilename', (bool)$enable);
+        $this->setConfig('hashFilename', (bool)$enable);
         return $this;
     }
 
@@ -225,7 +225,7 @@ class Uploader
      */
     public function enableUniqueFilename($enable)
     {
-        $this->config('uniqueFilename', (bool)$enable);
+        $this->setConfig('uniqueFilename', (bool)$enable);
         return $this;
     }
 
@@ -346,7 +346,7 @@ class Uploader
         // filename
         $uploadName = strtolower(trim($upload['name']));
         list($filename, $ext, $dotExt) = self::splitBasename($uploadName);
-        $filename = Inflector::slug($filename, $config['slug']);
+        $filename = Text::slug($filename, $config['slug']);
         $ext = strtolower($ext);
         $dotExt = strtolower($dotExt);
 
