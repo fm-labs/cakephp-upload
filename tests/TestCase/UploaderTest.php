@@ -150,7 +150,7 @@ class UploaderTest extends UploadPluginTestCase
         $Uploader = $this->uploader();
         $Uploader->setMinFileSize($minFileSize);
 
-        $this->assertEquals($minFileSize, $Uploader->config('minFileSize'));
+        $this->assertEquals($minFileSize, $Uploader->getConfig('minFileSize'));
     }
 
     public function testSetMaxFileSize()
@@ -160,7 +160,7 @@ class UploaderTest extends UploadPluginTestCase
         $Uploader = $this->uploader();
         $Uploader->setMaxFileSize($maxSize);
 
-        $this->assertEquals($maxSize, $Uploader->config('maxFileSize'));
+        $this->assertEquals($maxSize, $Uploader->getConfig('maxFileSize'));
     }
 
     public function testSetMimeTypes()
@@ -170,7 +170,7 @@ class UploaderTest extends UploadPluginTestCase
         $Uploader = $this->uploader();
         $Uploader->setMimeTypes($mimeTypes);
 
-        $this->assertEquals($mimeTypes, $Uploader->config('mimeTypes'));
+        $this->assertEquals($mimeTypes, $Uploader->getConfig('mimeTypes'));
     }
 
     public function testSetFileExtensions()
@@ -180,7 +180,7 @@ class UploaderTest extends UploadPluginTestCase
         $Uploader = $this->uploader();
         $Uploader->setFileExtensions($extensions);
 
-        $this->assertEquals($extensions, $Uploader->config('fileExtensions'));
+        $this->assertEquals($extensions, $Uploader->getConfig('fileExtensions'));
     }
 
     public function testUploadWithFormSizeExceededUploadError()
