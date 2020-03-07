@@ -140,7 +140,7 @@ class UploaderTest extends UploadPluginTestCase
             'saveAs' => null,
             //'pattern' => '',
         ];
-        $this->assertEquals($expected, $this->uploader()->config());
+        $this->assertEquals($expected, $this->uploader()->getConfig());
     }
 
     public function testSetMinFileSize()
