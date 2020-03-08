@@ -71,15 +71,15 @@ class Uploader
         $this->setData($data);
     }
 
-    /**
-     * Configuration Getter / Setter
-     *
-     * @param      $key
-     * @param null $val
-     * @return $this|mixed
-     * @throws \InvalidArgumentException
-     * @deprecated use InstanceConfigTrait methods instead
-     */
+/**
+ * Configuration Getter / Setter
+ *
+ * @param      $key
+ * @param null $val
+ * @return $this|mixed
+ * @throws \InvalidArgumentException
+ * @deprecated use InstanceConfigTrait methods instead
+ */
 //    public function config($key = null, $val = null)
 //    {
 //        if ($key === null) {
@@ -142,6 +142,7 @@ class Uploader
         }
 
         $this->setConfig('uploadDir', $dir);
+
         return $this;
     }
 
@@ -154,6 +155,7 @@ class Uploader
     public function setMinFileSize($sizeInBytes)
     {
         $this->setConfig('minFileSize', (int)$sizeInBytes);
+
         return $this;
     }
 
@@ -166,6 +168,7 @@ class Uploader
     public function setMaxFileSize($sizeInBytes)
     {
         $this->setConfig('maxFileSize', (int)$sizeInBytes);
+
         return $this;
     }
 
@@ -178,6 +181,7 @@ class Uploader
     public function setMimeTypes($val)
     {
         $this->setConfig('mimeTypes', $val);
+
         return $this;
     }
 
@@ -190,6 +194,7 @@ class Uploader
     public function setSaveAs($val)
     {
         $this->setConfig('saveAs', $val);
+
         return $this;
     }
 
@@ -202,6 +207,7 @@ class Uploader
     public function setFileExtensions($ext)
     {
         $this->setConfig('fileExtensions', $ext);
+
         return $this;
     }
 
@@ -214,6 +220,7 @@ class Uploader
     public function enableHashFilename($enable)
     {
         $this->setConfig('hashFilename', (bool)$enable);
+
         return $this;
     }
 
@@ -226,6 +233,7 @@ class Uploader
     public function enableUniqueFilename($enable)
     {
         $this->setConfig('uniqueFilename', (bool)$enable);
+
         return $this;
     }
 
@@ -418,17 +426,17 @@ class Uploader
         return $uploadedFile;
     }
 
-/**
- * Split basename
- * @param string $basename File basename (filename with extension)
- * @return array Returns in format array($filename, $ext, $dotExt)
- */
+    /**
+     * Split basename
+     * @param string $basename File basename (filename with extension)
+     * @return array Returns in format array($filename, $ext, $dotExt)
+     */
     public static function splitBasename($basename)
     {
         if (strrpos($basename, '.') !== false) {
             $parts = explode('.', $basename);
             $ext = array_pop($parts);
-            $dotExt = '.'.$ext;
+            $dotExt = '.' . $ext;
             $filename = join('.', $parts);
         } else {
             $ext = $dotExt = null;

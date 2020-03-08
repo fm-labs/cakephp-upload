@@ -39,45 +39,45 @@ class UploaderTest extends UploadPluginTestCase
         }
 
         // setup dummy upload files
-        $this->upload1 = array(
+        $this->upload1 = [
             'name' => 'Upload File 1.txt',
             'type' => 'text/plain',
             'tmp_name' => $this->filesDir . 'upload1.txt',
             'error' => (int)0,
-            'size' => @filesize($this->filesDir . 'upload1.txt')
-        );
+            'size' => @filesize($this->filesDir . 'upload1.txt'),
+        ];
 
-        $this->upload2 = array(
+        $this->upload2 = [
             'name' => 'Upload File 2.txt',
             'type' => 'text/plain',
             'tmp_name' => $this->filesDir . 'upload2.txt',
             'error' => (int)0,
-            'size' => @filesize($this->filesDir . 'upload2.txt')
-        );
+            'size' => @filesize($this->filesDir . 'upload2.txt'),
+        ];
 
-        $this->uploadNoExt = array(
+        $this->uploadNoExt = [
             'name' => 'Upload_Without_Ext',
             'type' => 'text/plain',
             'tmp_name' => $this->filesDir . 'upload_noext',
             'error' => (int)0,
-            'size' => @filesize($this->filesDir . 'upload_noext')
-        );
+            'size' => @filesize($this->filesDir . 'upload_noext'),
+        ];
 
-        $this->uploadImage = array(
+        $this->uploadImage = [
             'name' => 'Upload.jpg',
             'type' => 'image/jpg',
             'tmp_name' => $this->filesDir . 'upload.jpg',
             'error' => (int)0,
-            'size' => @filesize($this->filesDir . 'upload.jpg')
-        );
+            'size' => @filesize($this->filesDir . 'upload.jpg'),
+        ];
 
-        $this->uploadEmpty = array(
+        $this->uploadEmpty = [
             'name' => 'Upload_empty.txt',
             'type' => 'text/plain',
             'tmp_name' => $this->filesDir . 'upload_empty.txt',
             'error' => (int)0,
-            'size' => @filesize($this->filesDir . 'upload_empty.txt')
-        );
+            'size' => @filesize($this->filesDir . 'upload_empty.txt'),
+        ];
     }
 
     /**
@@ -87,7 +87,7 @@ class UploaderTest extends UploadPluginTestCase
      * @param array $config Uploader config
      * @return Uploader
      */
-    public function uploader($data = array(), $config = [])
+    public function uploader($data = [], $config = [])
     {
         $config['uploadDir'] = $this->uploadDir;
 
@@ -248,7 +248,7 @@ class UploaderTest extends UploadPluginTestCase
     public function testUploadWithMimeTypeError()
     {
         $Uploader = $this->uploader($this->upload1);
-        $Uploader->setmimeTypes(array('image/*'));
+        $Uploader->setmimeTypes(['image/*']);
         $result = $Uploader->upload();
 
         $this->assertTrue(isset($result['upload_err']));
@@ -258,7 +258,7 @@ class UploaderTest extends UploadPluginTestCase
     public function testUploadWithFileExtensionError()
     {
         $Uploader = $this->uploader($this->upload1);
-        $Uploader->setfileExtensions(array('jpg', 'png'));
+        $Uploader->setfileExtensions(['jpg', 'png']);
         $result = $Uploader->upload();
 
         $this->assertTrue(isset($result['upload_err']));
@@ -301,7 +301,7 @@ class UploaderTest extends UploadPluginTestCase
         $Uploader = $this->uploader(
             [
                 $this->upload1,
-                $this->upload2
+                $this->upload2,
             ],
             [
                 'multiple' => true,
@@ -325,14 +325,14 @@ class UploaderTest extends UploadPluginTestCase
         $Uploader = $this->uploader(
             [
                 $this->upload1,
-                $this->upload2
+                $this->upload2,
             ],
             [
                 'multiple' => true,
                 'overwrite' => false,
                 'uniqueFilename' => false,
                 'hashFilename' => false,
-                'minFileSize' => 1 * 1024 * 1024
+                'minFileSize' => 1 * 1024 * 1024,
             ]
         );
 
@@ -352,7 +352,7 @@ class UploaderTest extends UploadPluginTestCase
             'overwrite' => false,
             'uniqueFilename' => false,
             'hashFilename' => false,
-            'saveAs' => 'test.file'
+            'saveAs' => 'test.file',
         ]);
         $result = $Uploader->upload();
 

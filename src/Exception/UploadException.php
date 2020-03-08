@@ -1,7 +1,7 @@
 <?php
 namespace Upload\Exception;
 
-use \Cake\Core\Exception\Exception;
+use Cake\Core\Exception\Exception;
 use Upload\Uploader;
 
 class UploadException extends Exception

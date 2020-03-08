@@ -31,6 +31,6 @@ return [
             #'events' => true, // @todo Implement 'events' config key
             // Filename Regex Pattern.
             #'pattern' => false, // @todo Implement 'pattern' config key
-        ]
-    ]
+        ],
+    ],
 ];
