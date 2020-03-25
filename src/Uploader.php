@@ -68,7 +68,7 @@ class Uploader
         //}
 
         $this->setConfig($config);
-        $this->setData($data);
+        $this->setUploadData($data);
     }
 
 /**
