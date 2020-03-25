@@ -27,7 +27,7 @@ class UploaderTest extends UploadPluginTestCase
     public $uploadNoExt;
     public $uploadImage;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->filesDir = dirname(__DIR__) . DS . 'files' . DS;
         $this->uploadDir = TMP . 'tests' . DS . 'upload' . DS;
@@ -288,10 +288,10 @@ class UploaderTest extends UploadPluginTestCase
             ]
         );
         $result = $Uploader->upload();
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
 
         $result = $Uploader->upload();
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
 
         //@TODO Compare file names
     }
@@ -313,7 +313,7 @@ class UploaderTest extends UploadPluginTestCase
 
         $result = $Uploader->upload();
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertTrue(isset($result[0]));
         $this->assertTrue(isset($result[1]));
 
@@ -338,7 +338,7 @@ class UploaderTest extends UploadPluginTestCase
 
         $result = $Uploader->upload();
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertTrue(isset($result[0]));
         $this->assertTrue(isset($result[1]));
 
@@ -363,7 +363,7 @@ class UploaderTest extends UploadPluginTestCase
         $this->assertEquals('test.file', $result['basename']);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         // clean up test upload dir
         $this->UploadFolder->delete();

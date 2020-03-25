@@ -72,35 +72,34 @@ class Uploader
     }
 
 /**
- * Configuration Getter / Setter
- *
- * @param      $key
- * @param null $val
- * @return $this|mixed
- * @throws \InvalidArgumentException
- * @deprecated use InstanceConfigTrait methods instead
- */
-//    public function config($key = null, $val = null)
-//    {
-//        if ($key === null) {
-//            return $this->_config;
-//        } elseif (is_array($key)) {
-//            foreach ($key as $_k => $_v) {
-//                $this->config($_k, $_v);
-//            }
-//
-//            return $this;
-//        } elseif (is_string($key) && $val !== null) {
-//            $this->_config[$key] = $val;
-//
-//            return $this;
-//        } elseif (is_string($key) && array_key_exists($key, $this->_config)) {
-//            return $this->_config[$key];
-//        } else {
-//            throw new \InvalidArgumentException('Uploader: Invalid config key ' . $key);
-//        }
-//    }
-
+     * Configuration Getter / Setter
+     *
+     * @param      $key
+     * @param null $val
+     * @return $this|mixed
+     * @throws \InvalidArgumentException
+     * @deprecated use InstanceConfigTrait methods instead
+     */
+    //    public function config($key = null, $val = null)
+    //    {
+    //        if ($key === null) {
+    //            return $this->_config;
+    //        } elseif (is_array($key)) {
+    //            foreach ($key as $_k => $_v) {
+    //                $this->config($_k, $_v);
+    //            }
+    //
+    //            return $this;
+    //        } elseif (is_string($key) && $val !== null) {
+    //            $this->_config[$key] = $val;
+    //
+    //            return $this;
+    //        } elseif (is_string($key) && array_key_exists($key, $this->_config)) {
+    //            return $this->_config[$key];
+    //        } else {
+    //            throw new \InvalidArgumentException('Uploader: Invalid config key ' . $key);
+    //        }
+    //    }
     /**
      * Upload data setter
      * Only for testing purposes. Pass upload data to the upload() method instead.
