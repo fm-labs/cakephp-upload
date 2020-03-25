@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Upload;
 
 use Cake\Core\Configure;
@@ -15,12 +17,12 @@ class Uploader
 {
     use InstanceConfigTrait;
 
-    const UPLOAD_ERR_MIN_FILE_SIZE = 100;
-    const UPLOAD_ERR_MAX_FILE_SIZE = 101;
-    const UPLOAD_ERR_MIME_TYPE = 102;
-    const UPLOAD_ERR_FILE_EXT = 103;
-    const UPLOAD_ERR_FILE_EXISTS = 104;
-    const UPLOAD_ERR_STORE_UPLOAD = 105;
+    public const UPLOAD_ERR_MIN_FILE_SIZE = 100;
+    public const UPLOAD_ERR_MAX_FILE_SIZE = 101;
+    public const UPLOAD_ERR_MIME_TYPE = 102;
+    public const UPLOAD_ERR_FILE_EXT = 103;
+    public const UPLOAD_ERR_FILE_EXISTS = 104;
+    public const UPLOAD_ERR_STORE_UPLOAD = 105;
 
     protected $_defaultConfig = [
         'uploadDir' => null,
@@ -71,7 +73,7 @@ class Uploader
         $this->setUploadData($data);
     }
 
-/**
+    /**
      * Configuration Getter / Setter
      *
      * @param      $key
@@ -100,6 +102,7 @@ class Uploader
     //            throw new \InvalidArgumentException('Uploader: Invalid config key ' . $key);
     //        }
     //    }
+
     /**
      * Upload data setter
      * Only for testing purposes. Pass upload data to the upload() method instead.
@@ -324,7 +327,7 @@ class Uploader
         }
 
         // split basename
-        list($filename, $ext, $dotExt) = self::splitBasename(trim($upload['name']));
+        [$filename, $ext, $dotExt] = self::splitBasename(trim($upload['name']));
 
         // validate extension
         if (!self::validateFileExtension($ext, $config['fileExtensions'])) {
@@ -338,7 +341,7 @@ class Uploader
      * Upload Handler
      *
      * @param array $upload
-     * @throws UploadException
+     * @throws \Upload\Exception\UploadException
      * @return array
      */
     protected function _processUpload($upload)
@@ -352,14 +355,14 @@ class Uploader
 
         // filename
         $uploadName = strtolower(trim($upload['name']));
-        list($filename, $ext, $dotExt) = self::splitBasename($uploadName);
+        [$filename, $ext, $dotExt] = self::splitBasename($uploadName);
         $filename = Text::slug($filename, $config['slug']);
         $ext = strtolower($ext);
         $dotExt = strtolower($dotExt);
 
         // filename override
         if ($config['saveAs']) {
-            list($filename, $ext, $dotExt) = self::splitBasename($config['saveAs']);
+            [$filename, $ext, $dotExt] = self::splitBasename($config['saveAs']);
         }
 
         // hash filename
@@ -453,7 +456,7 @@ class Uploader
      *
      * @param string $mime The mime type to check
      * @param array|string $allowed List of allowed mime types
-     * @return boolean
+     * @return bool
      */
     public static function validateMimeType($mime, $allowed = [])
     {
@@ -486,7 +489,7 @@ class Uploader
      *
      * @param string $ext
      * @param array|string $allowed List of allowed extensions. Use '*' for all extensions
-     * @return boolean
+     * @return bool
      */
     public static function validateFileExtension($ext, $allowed = [])
     {

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Upload\Test\TestCase;
 
 use Cake\Filesystem\Folder;
