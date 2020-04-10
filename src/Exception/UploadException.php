@@ -8,6 +8,10 @@ use Upload\Uploader;
 
 class UploadException extends Exception
 {
+    /**
+     * UploadException constructor.
+     * @param int $errCode Upload error code
+     */
     public function __construct($errCode)
     {
         parent::__construct(self::mapErrorMessage($errCode), $errCode);
