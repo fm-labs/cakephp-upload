@@ -19,7 +19,7 @@ class UploadController extends Controller
         // alternatively the uploader config can be loaded from a config file
         // (copy example config from PLUGIN/config/upload.sample.php to app/config/upload.php)
         //\Cake\Core\Configure::load('upload');
-        //$upload = new \Upload\Uploader('default');
+        //$uploader = new \Upload\Uploader('default');
 
         $uploader->upload($this->getRequest()->getData('uploadfile'));
         $result = $uploader->getResult();
