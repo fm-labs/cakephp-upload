@@ -46,8 +46,8 @@ class Uploader
     /**
      * Constructor
      *
-     * @param array $config
-     * @param null  $data
+     * @param array|string $config Uploader config
+     * @param array $data Upload data
      * @throws \Exception
      */
     public function __construct($config = [], array $data = [])
@@ -74,40 +74,10 @@ class Uploader
     }
 
     /**
-     * Configuration Getter / Setter
-     *
-     * @param      $key
-     * @param null $val
-     * @return $this|mixed
-     * @throws \InvalidArgumentException
-     * @deprecated use InstanceConfigTrait methods instead
-     */
-    //    public function config($key = null, $val = null)
-    //    {
-    //        if ($key === null) {
-    //            return $this->_config;
-    //        } elseif (is_array($key)) {
-    //            foreach ($key as $_k => $_v) {
-    //                $this->config($_k, $_v);
-    //            }
-    //
-    //            return $this;
-    //        } elseif (is_string($key) && $val !== null) {
-    //            $this->_config[$key] = $val;
-    //
-    //            return $this;
-    //        } elseif (is_string($key) && array_key_exists($key, $this->_config)) {
-    //            return $this->_config[$key];
-    //        } else {
-    //            throw new \InvalidArgumentException('Uploader: Invalid config key ' . $key);
-    //        }
-    //    }
-
-    /**
      * Upload data setter
      * Only for testing purposes. Pass upload data to the upload() method instead.
      *
-     * @param $data
+     * @param array $data Upload data
      * @return $this
      */
     public function setUploadData(array $data = [])
@@ -120,7 +90,7 @@ class Uploader
     /**
      * Upload data setter
      *
-     * @param $data
+     * @param array $data Upload data
      * @return $this
      *
      * @deprecated use setUploadData() instead
@@ -177,7 +147,7 @@ class Uploader
     /**
      * Allowed upload file mime type(s)
      *
-     * @param string|array $val
+     * @param string|array $val Allowed mime type(s)
      * @return $this
      */
     public function setMimeTypes($val)
@@ -203,7 +173,7 @@ class Uploader
     /**
      * Allowed upload file extension(s)
      *
-     * @param string|array $ext
+     * @param string|array $ext Allowed file extensions
      * @return $this
      */
     public function setFileExtensions($ext)
@@ -216,7 +186,7 @@ class Uploader
     /**
      * Enable/Disable filename hashing
      *
-     * @param $enable
+     * @param bool $enable Enable flag
      * @return $this
      */
     public function enableHashFilename($enable)
@@ -229,7 +199,7 @@ class Uploader
     /**
      * Enable/Disable unique filename
      *
-     * @param $enable
+     * @param bool $enable Enable flag
      * @return $this
      */
     public function enableUniqueFilename($enable)
@@ -242,10 +212,10 @@ class Uploader
     /**
      * Perform upload
      *
-     * @param array $uploadData
-     * @param array $options
-     *
+     * @param array $uploadData Upload data
+     * @param array $options Upload options
      * @return array
+     * @throws \Exception
      */
     public function upload($uploadData = null, $options = [])
     {
@@ -262,11 +232,20 @@ class Uploader
         return $this->_result;
     }
 
+    /**
+     * @return null|array
+     */
     public function getResult()
     {
         return $this->_result;
     }
 
+    /**
+     * @param array $data Upload data
+     * @param bool $throwExceptions If TRUE throws exception instead of returning an upload_err. Defaults to FALSE
+     * @return array
+     * @throws \Exception
+     */
     protected function _uploadMultiple($data, $throwExceptions = false)
     {
         $result = [];
@@ -277,6 +256,12 @@ class Uploader
         return $result;
     }
 
+    /**
+     * @param array $data Upload data
+     * @param bool $throwExceptions If TRUE throws exception instead of returning an upload_err. Defaults to FALSE
+     * @return array
+     * @throws \Exception
+     */
     protected function _upload($data, $throwExceptions = false)
     {
         try {
@@ -295,6 +280,10 @@ class Uploader
         return $result;
     }
 
+    /**
+     * @param array $upload Upload data
+     * @return bool
+     */
     protected function _validateUpload($upload)
     {
         $config = $this->_config;
@@ -327,7 +316,7 @@ class Uploader
         }
 
         // split basename
-        [$filename, $ext, $dotExt] = self::splitBasename(trim($upload['name']));
+        [,$ext,] = self::splitBasename(trim($upload['name']));
 
         // validate extension
         if (!self::validateFileExtension($ext, $config['fileExtensions'])) {
@@ -340,7 +329,7 @@ class Uploader
     /**
      * Upload Handler
      *
-     * @param array $upload
+     * @param array $upload Upload data
      * @throws \Upload\Exception\UploadException
      * @return array
      */
@@ -413,14 +402,14 @@ class Uploader
 
         //@TODO Return UploadFile object instance
         $uploadedFile = [
-            'name' => $upload['name'],  // file.txt
-            'type' => $upload['type'],  // text/plain
-            'size' => $upload['size'],  // 1234 (bytes)
-            'path' => $target,          // /path/to/uploaded/file
-            'basename' => $basename,    // file.txt
-            'filename' => $filename,    // file
-            'ext' => $ext,              // txt
-            'dotExt' => $dotExt,        // .txt
+            'name' => $upload['name'], // file.txt
+            'type' => $upload['type'], // text/plain
+            'size' => $upload['size'], // 1234 (bytes)
+            'path' => $target, // /path/to/uploaded/file
+            'basename' => $basename, // file.txt
+            'filename' => $filename, // file
+            'ext' => $ext, // txt
+            'dotExt' => $dotExt, // .txt
             'ts' => time(),
         ];
 
@@ -435,14 +424,14 @@ class Uploader
      */
     public static function splitBasename($basename)
     {
+        $ext = $dotExt = null;
+        $filename = $basename;
+
         if (strrpos($basename, '.') !== false) {
             $parts = explode('.', $basename);
             $ext = array_pop($parts);
             $dotExt = '.' . $ext;
             $filename = join('.', $parts);
-        } else {
-            $ext = $dotExt = null;
-            $filename = $basename;
         }
 
         return [$filename, $ext, $dotExt];
@@ -463,9 +452,9 @@ class Uploader
         if (is_string($allowed)) {
             if ($allowed == "*") {
                 return true;
-            } else {
-                $allowed = array_map('strtolower', explode(',', $allowed));
             }
+
+            $allowed = array_map('strtolower', explode(',', $allowed));
         }
 
         $mime = explode('/', $mime);
@@ -487,7 +476,7 @@ class Uploader
     /**
      * Validate file extension
      *
-     * @param string $ext
+     * @param string $ext The file extension to check
      * @param array|string $allowed List of allowed extensions. Use '*' for all extensions
      * @return bool
      */
@@ -496,9 +485,9 @@ class Uploader
         if (is_string($allowed)) {
             if ($allowed == "*") {
                 return true;
-            } else {
-                $allowed = array_map('strtolower', explode(',', $allowed));
             }
+
+            $allowed = array_map('strtolower', explode(',', $allowed));
         }
 
         return in_array(strtolower($ext), $allowed);

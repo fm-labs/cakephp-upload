@@ -1,6 +1,6 @@
 <?php
 /**
- *
+ * Example Upload plugin configuration
  */
 return [
     'Upload' => [

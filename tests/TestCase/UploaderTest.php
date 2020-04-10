@@ -29,6 +29,9 @@ class UploaderTest extends UploadPluginTestCase
     public $uploadNoExt;
     public $uploadImage;
 
+    /**
+     * {@inheritDoc}
+     */
     public function setUp(): void
     {
         $this->filesDir = dirname(__DIR__) . DS . 'files' . DS;
@@ -46,7 +49,7 @@ class UploaderTest extends UploadPluginTestCase
             'type' => 'text/plain',
             'tmp_name' => $this->filesDir . 'upload1.txt',
             'error' => (int)0,
-            'size' => @filesize($this->filesDir . 'upload1.txt'),
+            'size' => filesize($this->filesDir . 'upload1.txt'),
         ];
 
         $this->upload2 = [
@@ -54,7 +57,7 @@ class UploaderTest extends UploadPluginTestCase
             'type' => 'text/plain',
             'tmp_name' => $this->filesDir . 'upload2.txt',
             'error' => (int)0,
-            'size' => @filesize($this->filesDir . 'upload2.txt'),
+            'size' => filesize($this->filesDir . 'upload2.txt'),
         ];
 
         $this->uploadNoExt = [
@@ -62,7 +65,7 @@ class UploaderTest extends UploadPluginTestCase
             'type' => 'text/plain',
             'tmp_name' => $this->filesDir . 'upload_noext',
             'error' => (int)0,
-            'size' => @filesize($this->filesDir . 'upload_noext'),
+            'size' => filesize($this->filesDir . 'upload_noext'),
         ];
 
         $this->uploadImage = [
@@ -70,7 +73,7 @@ class UploaderTest extends UploadPluginTestCase
             'type' => 'image/jpg',
             'tmp_name' => $this->filesDir . 'upload.jpg',
             'error' => (int)0,
-            'size' => @filesize($this->filesDir . 'upload.jpg'),
+            'size' => filesize($this->filesDir . 'upload.jpg'),
         ];
 
         $this->uploadEmpty = [
@@ -78,8 +81,17 @@ class UploaderTest extends UploadPluginTestCase
             'type' => 'text/plain',
             'tmp_name' => $this->filesDir . 'upload_empty.txt',
             'error' => (int)0,
-            'size' => @filesize($this->filesDir . 'upload_empty.txt'),
+            'size' => filesize($this->filesDir . 'upload_empty.txt'),
         ];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function tearDown(): void
+    {
+        // clean up test upload dir
+        $this->UploadFolder->delete();
     }
 
     /**
@@ -88,6 +100,7 @@ class UploaderTest extends UploadPluginTestCase
      * @param array $data Upload data
      * @param array $config Uploader config
      * @return Uploader
+     * @throws \Exception
      */
     public function uploader($data = [], $config = [])
     {
@@ -99,6 +112,7 @@ class UploaderTest extends UploadPluginTestCase
     /**
      * Check if all dummy files exist
      * and the test upload dir is writable
+     * @return void
      */
     public function testTestSetup()
     {
@@ -111,21 +125,33 @@ class UploaderTest extends UploadPluginTestCase
         $this->assertEquals($this->uploadDir, $this->UploadFolder->pwd());
     }
 
+    /**
+     * @return void
+     */
     public function testStaticValidateMimeType()
     {
         $this->markTestIncomplete('Implement me: ' . __FUNCTION__);
     }
 
+    /**
+     * @return void
+     */
     public function testStaticValidateFileExtension()
     {
         $this->markTestIncomplete('Implement me: ' . __FUNCTION__);
     }
 
+    /**
+     * @return void
+     */
     public function testStaticSplitBasename()
     {
         $this->markTestIncomplete('Implement me: ' . __FUNCTION__);
     }
 
+    /**
+     * @return void
+     */
     public function testDefaultConfig()
     {
         $expected = [
@@ -145,6 +171,9 @@ class UploaderTest extends UploadPluginTestCase
         $this->assertEquals($expected, $this->uploader()->getConfig());
     }
 
+    /**
+     * @return void
+     */
     public function testSetMinFileSize()
     {
         $minFileSize = 1000;
@@ -155,6 +184,9 @@ class UploaderTest extends UploadPluginTestCase
         $this->assertEquals($minFileSize, $Uploader->getConfig('minFileSize'));
     }
 
+    /**
+     * @return void
+     */
     public function testSetMaxFileSize()
     {
         $maxSize = 1000;
@@ -165,6 +197,9 @@ class UploaderTest extends UploadPluginTestCase
         $this->assertEquals($maxSize, $Uploader->getConfig('maxFileSize'));
     }
 
+    /**
+     * @return void
+     */
     public function testSetMimeTypes()
     {
         $mimeTypes = ['image/*', 'text/html'];
@@ -175,6 +210,9 @@ class UploaderTest extends UploadPluginTestCase
         $this->assertEquals($mimeTypes, $Uploader->getConfig('mimeTypes'));
     }
 
+    /**
+     * @return void
+     */
     public function testSetFileExtensions()
     {
         $extensions = ['jpg', 'png'];
@@ -185,6 +223,9 @@ class UploaderTest extends UploadPluginTestCase
         $this->assertEquals($extensions, $Uploader->getConfig('fileExtensions'));
     }
 
+    /**
+     * @return void
+     */
     public function testUploadWithFormSizeExceededUploadError()
     {
         $upload = [
@@ -198,6 +239,9 @@ class UploaderTest extends UploadPluginTestCase
         $this->assertEquals('Maximum form file size exceeded', $result['upload_err']);
     }
 
+    /**
+     * @return void
+     */
     public function testUploadWithNoFileUploadError()
     {
         $upload = [
@@ -211,6 +255,9 @@ class UploaderTest extends UploadPluginTestCase
         $this->assertEquals('No file uploaded', $result['upload_err']);
     }
 
+    /**
+     * @return void
+     */
     public function testUploadWithPartialUploadError()
     {
         $upload = [
@@ -224,6 +271,9 @@ class UploaderTest extends UploadPluginTestCase
         $this->assertEquals('File only partially uploaded', $result['upload_err']);
     }
 
+    /**
+     * @return void
+     */
     public function testUploadWithMinFileSizeError()
     {
         // pre-condition
@@ -237,6 +287,9 @@ class UploaderTest extends UploadPluginTestCase
         $this->assertEquals('Minimum file size error', $result['upload_err']);
     }
 
+    /**
+     * @return void
+     */
     public function testUploadWithMaxFileSizeError()
     {
         $Uploader = $this->uploader($this->upload1);
@@ -247,26 +300,35 @@ class UploaderTest extends UploadPluginTestCase
         $this->assertEquals('Maximum file size exceeded', $result['upload_err']);
     }
 
+    /**
+     * @return void
+     */
     public function testUploadWithMimeTypeError()
     {
         $Uploader = $this->uploader($this->upload1);
-        $Uploader->setmimeTypes(['image/*']);
+        $Uploader->setMimeTypes(['image/*']);
         $result = $Uploader->upload();
 
         $this->assertTrue(isset($result['upload_err']));
         $this->assertEquals('Invalid mime type', $result['upload_err']);
     }
 
+    /**
+     * @return void
+     */
     public function testUploadWithFileExtensionError()
     {
         $Uploader = $this->uploader($this->upload1);
-        $Uploader->setfileExtensions(['jpg', 'png']);
+        $Uploader->setFileExtensions(['jpg', 'png']);
         $result = $Uploader->upload();
 
         $this->assertTrue(isset($result['upload_err']));
         $this->assertEquals('Invalid file extension', $result['upload_err']);
     }
 
+    /**
+     * @return void
+     */
     public function testZeroConfigUpload()
     {
         $Uploader = $this->uploader($this->upload1);
@@ -279,6 +341,9 @@ class UploaderTest extends UploadPluginTestCase
         $this->assertEquals(1, preg_match('/upload_file_1_([0-9a-z]+)$/', $result['filename']));
     }
 
+    /**
+     * @return void
+     */
     public function testUploadOverwrite()
     {
         $Uploader = $this->uploader(
@@ -298,6 +363,9 @@ class UploaderTest extends UploadPluginTestCase
         //@TODO Compare file names
     }
 
+    /**
+     * @return void
+     */
     public function testUploadMultiple()
     {
         $Uploader = $this->uploader(
@@ -322,6 +390,9 @@ class UploaderTest extends UploadPluginTestCase
         //@TODO check results
     }
 
+    /**
+     * @return void
+     */
     public function testUploadMultipleError()
     {
         $Uploader = $this->uploader(
@@ -347,6 +418,9 @@ class UploaderTest extends UploadPluginTestCase
         //@TODO check results
     }
 
+    /**
+     * @return void
+     */
     public function testUploadWithPredefinedFilename()
     {
         $Uploader = $this->uploader($this->upload1, [
@@ -363,11 +437,5 @@ class UploaderTest extends UploadPluginTestCase
         $this->assertEquals('.file', $result['dotExt']);
         $this->assertEquals('test', $result['filename']);
         $this->assertEquals('test.file', $result['basename']);
-    }
-
-    public function tearDown(): void
-    {
-        // clean up test upload dir
-        $this->UploadFolder->delete();
     }
 }

@@ -8,9 +8,9 @@ use Upload\Uploader;
 
 class UploadException extends Exception
 {
-    public function __construct($errCode, $code = 500)
+    public function __construct($errCode)
     {
-        parent::__construct(self::mapErrorMessage($errCode), $code);
+        parent::__construct(self::mapErrorMessage($errCode), $errCode);
     }
 
     /**
