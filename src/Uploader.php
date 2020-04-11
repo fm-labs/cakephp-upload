@@ -17,6 +17,14 @@ class Uploader
 {
     use InstanceConfigTrait;
 
+    public const UPLOAD_ERR_OK = UPLOAD_ERR_OK; // 0
+    public const UPLOAD_ERR_INI_SIZE = UPLOAD_ERR_INI_SIZE; // 1
+    public const UPLOAD_ERR_FORM_SIZE = UPLOAD_ERR_FORM_SIZE; // 2
+    public const UPLOAD_ERR_PARTIAL = UPLOAD_ERR_PARTIAL; // 3
+    public const UPLOAD_ERR_NO_FILE = UPLOAD_ERR_NO_FILE; // 4
+    public const UPLOAD_ERR_NO_TMP_DIR = UPLOAD_ERR_NO_TMP_DIR; // 6
+    public const UPLOAD_ERR_CANT_WRITE = UPLOAD_ERR_CANT_WRITE; // 7
+    public const UPLOAD_ERR_EXTENSION = UPLOAD_ERR_EXTENSION; // 8
     public const UPLOAD_ERR_MIN_FILE_SIZE = 100;
     public const UPLOAD_ERR_MAX_FILE_SIZE = 101;
     public const UPLOAD_ERR_MIME_TYPE = 102;
@@ -217,7 +225,7 @@ class Uploader
      * @return array
      * @throws \Exception
      */
-    public function upload($uploadData = null, $options = [])
+    public function upload($uploadData = null, $options = []): array
     {
         $this->_result = null;
         $uploadData = $uploadData ?: $this->_data;
@@ -235,7 +243,7 @@ class Uploader
     /**
      * @return null|array
      */
-    public function getResult()
+    public function getResult(): ?array
     {
         return $this->_result;
     }
@@ -246,7 +254,7 @@ class Uploader
      * @return array
      * @throws \Exception
      */
-    protected function _uploadMultiple($data, $throwExceptions = false)
+    protected function _uploadMultiple($data, $throwExceptions = false): array
     {
         $result = [];
         foreach ($data as $_data) {
@@ -262,7 +270,7 @@ class Uploader
      * @return array
      * @throws \Exception
      */
-    protected function _upload($data, $throwExceptions = false)
+    protected function _upload($data, $throwExceptions = false): array
     {
         try {
             $this->_validateUpload($data);
@@ -284,7 +292,7 @@ class Uploader
      * @param array $upload Upload data
      * @return bool
      */
-    protected function _validateUpload($upload)
+    protected function _validateUpload($upload): bool
     {
         $config = $this->_config;
 
@@ -333,7 +341,7 @@ class Uploader
      * @throws \Upload\Exception\UploadException
      * @return array
      */
-    protected function _processUpload($upload)
+    protected function _processUpload($upload): array
     {
         $config = $this->_config;
 
@@ -422,7 +430,7 @@ class Uploader
      * @param string $basename File basename (filename with extension)
      * @return array Returns in format array($filename, $ext, $dotExt)
      */
-    public static function splitBasename($basename)
+    public static function splitBasename($basename): array
     {
         $ext = $dotExt = null;
         $filename = $basename;
@@ -447,7 +455,7 @@ class Uploader
      * @param array|string $allowed List of allowed mime types
      * @return bool
      */
-    public static function validateMimeType($mime, $allowed = [])
+    public static function validateMimeType($mime, $allowed = []): bool
     {
         if (is_string($allowed)) {
             if ($allowed == "*") {
@@ -480,7 +488,7 @@ class Uploader
      * @param array|string $allowed List of allowed extensions. Use '*' for all extensions
      * @return bool
      */
-    public static function validateFileExtension($ext, $allowed = [])
+    public static function validateFileExtension($ext, $allowed = []): bool
     {
         if (is_string($allowed)) {
             if ($allowed == "*") {
