@@ -316,7 +316,7 @@ class Uploader
         }
 
         // split basename
-        [,$ext,] = self::splitBasename(trim($upload['name']));
+        [$filename, $ext, $dotExt] = self::splitBasename(trim($upload['name']));
 
         // validate extension
         if (!self::validateFileExtension($ext, $config['fileExtensions'])) {
