@@ -30,9 +30,23 @@
         "cs-fix": "phpcbf --colors --standard=vendor/cakephp/cakephp-codesniffer/CakePHP src/ tests/",
         "stan": "phpstan analyse src/",
         "test": "phpunit --colors=always tests/",
-        "quick-build": "phing -Dbasedir=$(pwd) -f ~/workspaces/php/cakephp-devtools/configs/phing.xml quick-build",
-        "full-build": "phing -Dbasedir=$(pwd) -f ~/workspaces/php/cakephp-devtools/configs/phing.xml full-build",
-        "phpunit": "phing -Dbasedir=$(pwd) -f ~/workspaces/php/cakephp-devtools/configs/phing.xml phpunit"
+
+        "quick-test": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml quick-test",
+        "quick-build": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml quick-build",
+        "full-build": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml full-build",
+        "static-analysis": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml static-analysis",
+
+        "phpunit": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phpunit",
+        "pdepend": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml pdepend",
+        "phpcbf": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phpcbf",
+        "phpcs": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phpcs",
+        "phpcs-ci": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phpcs-ci",
+        "phpmd": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phpmd",
+        "phpmd-ci": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phpmd-ci",
+        "phpcpd": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phpcpd",
+        "phpcpd-ci": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phpcpd-ci",
+        "phploc": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phploc",
+        "phploc-ci": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phploc-ci"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
