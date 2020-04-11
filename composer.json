@@ -7,7 +7,8 @@
         "cakephp/cakephp": "^4.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "*"
+        "phpunit/phpunit": "^8",
+        "fm-labs/cakephp-devtools": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -28,6 +29,11 @@
         "cs-check": "phpcs --colors -p --standard=vendor/cakephp/cakephp-codesniffer/CakePHP src/ tests/",
         "cs-fix": "phpcbf --colors --standard=vendor/cakephp/cakephp-codesniffer/CakePHP src/ tests/",
         "stan": "phpstan analyse src/",
-        "test": "phpunit --colors=always tests/"
-    }
+        "test": "phpunit --colors=always tests/",
+        "quick-build": "phing -Dbasedir=$(pwd) -f ~/workspaces/php/cakephp-devtools/configs/phing.xml quick-build",
+        "full-build": "phing -Dbasedir=$(pwd) -f ~/workspaces/php/cakephp-devtools/configs/phing.xml full-build",
+        "phpunit": "phing -Dbasedir=$(pwd) -f ~/workspaces/php/cakephp-devtools/configs/phing.xml phpunit"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
