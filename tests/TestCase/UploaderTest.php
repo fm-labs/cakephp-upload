@@ -125,12 +125,20 @@ class UploaderTest extends UploadPluginTestCase
         $this->assertEquals($this->uploadDir, $this->UploadFolder->pwd());
     }
 
+
     /**
      * @return void
      */
     public function testStaticValidateMimeType()
     {
-        $this->markTestIncomplete('Implement me: ' . __FUNCTION__);
+        $this->assertTrue(Uploader::validateMimeType('text/plain', 'text/plain'));
+        $this->assertTrue(Uploader::validateMimeType('text/plain', 'text/*'));
+        $this->assertTrue(Uploader::validateMimeType('text/plain', '*'));
+        $this->assertTrue(Uploader::validateMimeType('text/plain', ['text/plain']));
+        $this->assertTrue(Uploader::validateMimeType('text/plain', ['text/*']));
+
+        $this->assertFalse(Uploader::validateMimeType('text/plain', 'image/png'));
+        $this->assertFalse(Uploader::validateMimeType('text/plain', 'image/*'));
     }
 
     /**
@@ -138,7 +146,9 @@ class UploaderTest extends UploadPluginTestCase
      */
     public function testStaticValidateFileExtension()
     {
-        $this->markTestIncomplete('Implement me: ' . __FUNCTION__);
+        $this->assertTrue(Uploader::validateFileExtension('txt', 'txt'));
+        $this->assertTrue(Uploader::validateFileExtension('txt', ['txt']));
+        $this->assertTrue(Uploader::validateFileExtension('txt', '*'));
     }
 
     /**
@@ -146,7 +156,41 @@ class UploaderTest extends UploadPluginTestCase
      */
     public function testStaticSplitBasename()
     {
-        $this->markTestIncomplete('Implement me: ' . __FUNCTION__);
+        $basename = 'filename.ext';
+        [$filename, $ext, $dotExt] = Uploader::splitBasename($basename);
+        $this->assertEquals('filename', $filename);
+        $this->assertEquals('ext', $ext);
+        $this->assertEquals('.ext', $dotExt);
+
+        $basename = 'filename';
+        [$filename, $ext, $dotExt] = Uploader::splitBasename($basename);
+        $this->assertEquals('filename', $filename);
+        $this->assertEquals('', $ext);
+        $this->assertEquals('', $dotExt);
+
+        $basename = '.filename';
+        [$filename, $ext, $dotExt] = Uploader::splitBasename($basename);
+        $this->assertEquals('', $filename);
+        $this->assertEquals('filename', $ext);
+        $this->assertEquals('.filename', $dotExt);
+    }
+
+    /**
+     * @return void
+     */
+    public function testConstructInvalidConfig()
+    {
+        $this->expectException(\Exception::class);
+        new Uploader('invalid-config');
+    }
+
+    /**
+     * @return void
+     */
+    public function testConstructFallbackUploadDir()
+    {
+        $uploader = new Uploader([]);
+        $this->assertEquals(TMP . 'uploads' . DS, $uploader->getConfig('uploadDir'));
     }
 
     /**
@@ -169,6 +213,21 @@ class UploaderTest extends UploadPluginTestCase
             //'pattern' => '',
         ];
         $this->assertEquals($expected, $this->uploader()->getConfig());
+    }
+
+    /**
+     * @return void
+     */
+    public function testSetUploadDir()
+    {
+        $minFileSize = 1000;
+
+        $Uploader = $this->uploader();
+        $Uploader->setUploadDir(TMP);
+        $this->assertEquals(TMP, $Uploader->getConfig('uploadDir'));
+
+        $this->expectException(\Exception::class);
+        $Uploader->setUploadDir('/non-existent-path');
     }
 
     /**
@@ -221,6 +280,39 @@ class UploaderTest extends UploadPluginTestCase
         $Uploader->setFileExtensions($extensions);
 
         $this->assertEquals($extensions, $Uploader->getConfig('fileExtensions'));
+    }
+
+    /**
+     * @return void
+     */
+    public function testSetSaveAs()
+    {
+        $Uploader = $this->uploader();
+        $Uploader->setSaveAs('my-file-name.ext');
+
+        $this->assertEquals('my-file-name.ext', $Uploader->getConfig('saveAs'));
+    }
+
+    /**
+     * @return void
+     */
+    public function testEnableUniqueFilename()
+    {
+        $Uploader = $this->uploader();
+        $Uploader->enableUniqueFilename(true);
+
+        $this->assertEquals(true, $Uploader->getConfig('uniqueFilename'));
+    }
+
+    /**
+     * @return void
+     */
+    public function testEnableHashFilename()
+    {
+        $Uploader = $this->uploader();
+        $Uploader->enableHashFilename(true);
+
+        $this->assertEquals(true, $Uploader->getConfig('hashFilename'));
     }
 
     /**
