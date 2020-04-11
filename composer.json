@@ -47,7 +47,9 @@
         "phpcpd": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phpcpd",
         "phpcpd-ci": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phpcpd-ci",
         "phploc": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phploc",
-        "phploc-ci": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phploc-ci"
+        "phploc-ci": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phploc-ci",
+        "phpstan": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phpstan",
+        "phpstan-ci": "phing -Dbasedir=$(pwd) -f ./vendor/fm-labs/cakephp-devtools/configs/phing.xml phpstan-ci"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
