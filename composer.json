@@ -1,6 +1,7 @@
 {
     "name": "fm-labs/cakephp-upload",
     "description": "Upload plugin for CakePHP",
+    "license": "Unlicense",
     "type": "cakephp-plugin",
     "require": {
         "php": ">=7.2",

@@ -1,14 +1,14 @@
 <?php
+declare(strict_types=1);
 
-namespace Upload\Exception;
-
+namespace Upload\Test\TestCase\Exception;
 
 use Cake\TestSuite\TestCase;
+use Upload\Exception\UploadException;
 use Upload\Uploader;
 
 class UploadExceptionTest extends TestCase
 {
-
     /**
      * @return void
      */
