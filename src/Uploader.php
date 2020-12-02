@@ -7,10 +7,12 @@ use Cake\Core\Configure;
 use Cake\Core\InstanceConfigTrait;
 use Cake\Log\Log;
 use Cake\Utility\Text;
+use Psr\Http\Message\UploadedFileInterface;
 use Upload\Exception\UploadException;
 
 /**
  * Class Uploader
+ *
  * @package Upload
  */
 class Uploader
@@ -39,7 +41,7 @@ class Uploader
         'mimeTypes' => '*',
         'fileExtensions' => '*',
         'multiple' => false,
-        'slug' => "_",
+        'slug' => '_',
         'hashFilename' => false,
         'uniqueFilename' => true,
         'overwrite' => false,
@@ -47,8 +49,14 @@ class Uploader
         //'pattern' => false, // @todo Implement me
     ];
 
+    /**
+     * @var array
+     */
     protected $_data;
 
+    /**
+     * @var array
+     */
     protected $_result;
 
     /**
@@ -100,7 +108,6 @@ class Uploader
      *
      * @param array $data Upload data
      * @return $this
-     *
      * @deprecated use setUploadData() instead
      */
     public function setData($data = [])
@@ -265,16 +272,29 @@ class Uploader
     }
 
     /**
-     * @param array $data Upload data
+     * @param array|\Laminas\Diactoros\UploadedFile|\Psr\Http\Message\UploadedFileInterface $upload Upload data
      * @param bool $throwExceptions If TRUE throws exception instead of returning an upload_err. Defaults to FALSE
      * @return array
      * @throws \Exception
      */
-    protected function _upload($data, $throwExceptions = false): array
+    protected function _upload($upload, $throwExceptions = false): array
     {
         try {
-            $this->_validateUpload($data);
-            $result = $this->_processUpload($data);
+            if (is_array($upload)) {
+                $upload = new \Laminas\Diactoros\UploadedFile(
+                    $upload['tmp_name'],
+                    $upload['size'],
+                    $upload['error'],
+                    $upload['name'],
+                    $upload['type']
+                );
+            }
+            if (!($upload instanceof UploadedFileInterface)) {
+                throw new \Exception('Invalid upload data');
+            }
+
+            $this->_validateUpload($upload);
+            $result = $this->_processUpload($upload);
         } catch (\Exception $ex) {
             if ($throwExceptions === true) {
                 throw $ex;
@@ -289,21 +309,21 @@ class Uploader
     }
 
     /**
-     * @param array $upload Upload data
+     * @param \Psr\Http\Message\UploadedFileInterface $upload Upload data
      * @return bool
      */
-    protected function _validateUpload($upload): bool
+    protected function _validateUpload(UploadedFileInterface $upload): bool
     {
         $config = $this->_config;
 
         // validate upload data
-        if (!$upload || !is_array($upload)) {
+        if (!$upload || !$upload->getStream()) {
             throw new UploadException(UPLOAD_ERR_NO_FILE);
         }
 
         // check upload error
-        if ($upload['error'] > 0) {
-            throw new UploadException($upload['error']);
+        if ($upload->getError() > 0) {
+            throw new UploadException($upload->getError());
         }
 
         // check upload dir
@@ -315,16 +335,16 @@ class Uploader
         }
 
         // validate size limits and mime type
-        if ($upload['size'] < $config['minFileSize']) {
+        if ($upload->getSize() < $config['minFileSize']) {
             throw new UploadException(self::UPLOAD_ERR_MIN_FILE_SIZE);
-        } elseif ($upload['size'] > $config['maxFileSize']) {
+        } elseif ($upload->getSize() > $config['maxFileSize']) {
             throw new UploadException(self::UPLOAD_ERR_MAX_FILE_SIZE);
-        } elseif (!self::validateMimeType($upload['type'], $config['mimeTypes'])) {
+        } elseif (!self::validateMimeType($upload->getClientMediaType(), $config['mimeTypes'])) {
             throw new UploadException(self::UPLOAD_ERR_MIME_TYPE);
         }
 
         // split basename
-        [$filename, $ext, $dotExt] = self::splitBasename(trim($upload['name']));
+        [$filename, $ext, $dotExt] = self::splitBasename(trim($upload->getClientFilename()));
 
         // validate extension
         if (!self::validateFileExtension($ext, $config['fileExtensions'])) {
@@ -337,21 +357,17 @@ class Uploader
     /**
      * Upload Handler
      *
-     * @param array $upload Upload data
-     * @throws \Upload\Exception\UploadException
+     * @param \Psr\Http\Message\UploadedFileInterface $upload Upload data
      * @return array
      */
-    protected function _processUpload($upload): array
+    protected function _processUpload(UploadedFileInterface $upload): array
     {
         $config = $this->_config;
-
-        //debug($upload);
-        //debug($config);
 
         //@TODO Fire event 'Upload.beforeUpload'
 
         // filename
-        $uploadName = strtolower(trim($upload['name']));
+        $uploadName = strtolower(trim($upload->getClientFilename()));
         [$filename, $ext, $dotExt] = self::splitBasename($uploadName);
         $filename = Text::slug($filename, $config['slug']);
         $ext = strtolower($ext);
@@ -390,29 +406,18 @@ class Uploader
         }
         Log::debug("Saving uploaded file to $target", 'upload');
 
-        //debug("Is Uploaded: " . is_uploaded_file($upload['tmp_name']));
-        //debug("Move uploaded file from " . $upload['tmp_name'] . " to " . $target);
-
-        $isUploaded = is_uploaded_file($upload['tmp_name']);
-
-        //move uploaded file to upload dir
-        //@TODO Use a StorageEngine
-
-        if ($isUploaded) {
-            if (!move_uploaded_file($upload['tmp_name'], $target)) {
-                throw new UploadException(self::UPLOAD_ERR_STORE_UPLOAD);
-            }
-        } else {
-            if (!copy($upload['tmp_name'], $target)) {
-                throw new UploadException(self::UPLOAD_ERR_STORE_UPLOAD);
-            }
+        //move uploaded file to target location
+        try {
+            $upload->moveTo($target);
+        } catch (\Exception $ex) {
+            Log::critical($ex->getMessage(), ['upload', 'uploader']);
+            throw new UploadException(self::UPLOAD_ERR_STORE_UPLOAD);
         }
 
-        //@TODO Return UploadFile object instance
         $uploadedFile = [
-            'name' => $upload['name'], // file.txt
-            'type' => $upload['type'], // text/plain
-            'size' => $upload['size'], // 1234 (bytes)
+            'name' => $upload->getClientFilename(), // file.txt
+            'type' => $upload->getClientMediaType(), // text/plain
+            'size' => $upload->getSize(), // 1234 (bytes)
             'path' => $target, // /path/to/uploaded/file
             'basename' => $basename, // file.txt
             'filename' => $filename, // file
@@ -427,10 +432,11 @@ class Uploader
 
     /**
      * Split basename
+     *
      * @param string $basename File basename (filename with extension)
      * @return array Returns in format array($filename, $ext, $dotExt)
      */
-    public static function splitBasename($basename): array
+    public static function splitBasename(string $basename): array
     {
         $ext = $dotExt = null;
         $filename = $basename;
@@ -458,7 +464,7 @@ class Uploader
     public static function validateMimeType($mime, $allowed = []): bool
     {
         if (is_string($allowed)) {
-            if ($allowed == "*") {
+            if ($allowed == '*') {
                 return true;
             }
 
@@ -473,7 +479,7 @@ class Uploader
                 continue;
             }
 
-            if ($type[1] == "*" || $mime[1] == $type[1]) {
+            if ($type[1] == '*' || $mime[1] == $type[1]) {
                 return true;
             }
         }
@@ -491,7 +497,7 @@ class Uploader
     public static function validateFileExtension($ext, $allowed = []): bool
     {
         if (is_string($allowed)) {
-            if ($allowed == "*") {
+            if ($allowed == '*') {
                 return true;
             }
 
