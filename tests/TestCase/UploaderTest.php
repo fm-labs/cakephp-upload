@@ -30,7 +30,7 @@ class UploaderTest extends UploadPluginTestCase
     public $uploadImage;
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function setUp(): void
     {
@@ -86,7 +86,7 @@ class UploaderTest extends UploadPluginTestCase
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function tearDown(): void
     {
@@ -112,6 +112,7 @@ class UploaderTest extends UploadPluginTestCase
     /**
      * Check if all dummy files exist
      * and the test upload dir is writable
+     *
      * @return void
      */
     public function testTestSetup()
@@ -124,7 +125,6 @@ class UploaderTest extends UploadPluginTestCase
         // check upload dir
         $this->assertEquals($this->uploadDir, $this->UploadFolder->pwd());
     }
-
 
     /**
      * @return void
@@ -186,6 +186,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testConstructFallbackUploadDir()
     {
@@ -195,6 +196,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testDefaultConfig()
     {
@@ -217,11 +219,10 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testSetUploadDir()
     {
-        $minFileSize = 1000;
-
         $Uploader = $this->uploader();
         $Uploader->setUploadDir(TMP);
         $this->assertEquals(TMP, $Uploader->getConfig('uploadDir'));
@@ -232,6 +233,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testSetMinFileSize()
     {
@@ -245,6 +247,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testSetMaxFileSize()
     {
@@ -258,6 +261,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testSetMimeTypes()
     {
@@ -271,6 +275,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testSetFileExtensions()
     {
@@ -284,6 +289,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testSetSaveAs()
     {
@@ -295,6 +301,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testEnableUniqueFilename()
     {
@@ -306,6 +313,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testEnableHashFilename()
     {
@@ -317,11 +325,16 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testUploadWithFormSizeExceededUploadError()
     {
         $upload = [
+            'name' => 'Upload File 1.txt',
+            'type' => 'text/plain',
+            'tmp_name' => $this->filesDir . 'upload1.txt',
             'error' => UPLOAD_ERR_FORM_SIZE,
+            'size' => filesize($this->filesDir . 'upload1.txt'),
         ];
 
         $Uploader = $this->uploader($upload);
@@ -333,6 +346,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testUploadWithNoFileUploadError()
     {
@@ -349,6 +363,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testUploadWithPartialUploadError()
     {
@@ -365,6 +380,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testUploadWithMinFileSizeError()
     {
@@ -381,6 +397,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testUploadWithMaxFileSizeError()
     {
@@ -394,6 +411,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testUploadWithMimeTypeError()
     {
@@ -407,6 +425,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testUploadWithFileExtensionError()
     {
@@ -420,6 +439,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testZeroConfigUpload()
     {
@@ -435,6 +455,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testUploadOverwrite()
     {
@@ -457,6 +478,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testUploadMultiple()
     {
@@ -484,6 +506,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testUploadMultipleError()
     {
@@ -512,6 +535,7 @@ class UploaderTest extends UploadPluginTestCase
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function testUploadWithPredefinedFilename()
     {

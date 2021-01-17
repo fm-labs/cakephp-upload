@@ -281,12 +281,16 @@ class Uploader
     {
         try {
             if (is_array($upload)) {
+                if ($upload['error'] > 0) {
+                    throw new UploadException($upload['error']);
+                }
+
                 $upload = new \Laminas\Diactoros\UploadedFile(
-                    $upload['tmp_name'],
-                    $upload['size'],
-                    $upload['error'],
-                    $upload['name'],
-                    $upload['type']
+                    $upload['tmp_name'] ?? null,
+                    $upload['size'] ?? 0,
+                    $upload['error'] ?? 0,
+                    $upload['name'] ?? null,
+                    $upload['type'] ?? null
                 );
             }
             if (!($upload instanceof UploadedFileInterface)) {
