@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Upload\Exception;
 
-use Cake\Core\Exception\Exception;
+use Cake\Core\Exception\CakeException;
 use Upload\Uploader;
 
-class UploadException extends Exception
+class UploadException extends CakeException
 {
     /**
      * UploadException constructor.
@@ -24,7 +24,7 @@ class UploadException extends Exception
      * @param int $errCode Upload error code
      * @return string Upload error message
      */
-    public static function mapErrorMessage($errCode): string
+    public static function mapErrorMessage(int $errCode): string
     {
         $errors = [
             Uploader::UPLOAD_ERR_OK => __d('upload', 'Upload successful'),

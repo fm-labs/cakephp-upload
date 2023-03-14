@@ -7,6 +7,8 @@ use Cake\Core\Configure;
 use Cake\Core\InstanceConfigTrait;
 use Cake\Log\Log;
 use Cake\Utility\Text;
+use Exception;
+use Laminas\Diactoros\UploadedFile;
 use Psr\Http\Message\UploadedFileInterface;
 use Upload\Exception\UploadException;
 
@@ -34,7 +36,7 @@ class Uploader
     public const UPLOAD_ERR_FILE_EXISTS = 104;
     public const UPLOAD_ERR_STORE_UPLOAD = 105;
 
-    protected $_defaultConfig = [
+    protected array $_defaultConfig = [
         'uploadDir' => null,
         'minFileSize' => 1,
         'maxFileSize' => 2097152, // 2MB
@@ -52,12 +54,12 @@ class Uploader
     /**
      * @var array
      */
-    protected $_data;
+    protected array $_data;
 
     /**
-     * @var array
+     * @var array|null
      */
-    protected $_result;
+    protected ?array $_result;
 
     /**
      * Constructor
@@ -66,17 +68,19 @@ class Uploader
      * @param array $data Upload data
      * @throws \Exception
      */
-    public function __construct($config = [], array $data = [])
+    public function __construct(array|string $config = [], array $data = [])
     {
         // Load config
-        if (is_string($config) && !Configure::check('Upload.' . $config)) {
-            throw new \Exception(__d('upload', 'Invalid Upload Configuration: {0}', $config));
-        } elseif (is_string($config)) {
+        if (is_string($config)) {
+            if (!Configure::check('Upload.' . $config)) {
+                throw new Exception(__d('upload', 'Invalid Upload Configuration: {0}', $config));
+            }
             $config = (array)Configure::read('Upload.' . $config);
         }
 
         // Fallback upload dir
         if (!isset($config['uploadDir'])) {
+            //@todo Make fallback upload dir configurable (constant/config/setting)
             $config['uploadDir'] = TMP . 'uploads' . DS;
         }
 
@@ -110,7 +114,7 @@ class Uploader
      * @return $this
      * @deprecated use setUploadData() instead
      */
-    public function setData($data = [])
+    public function setData(array $data = [])
     {
         return $this->setUploadData($data);
     }
@@ -122,10 +126,10 @@ class Uploader
      * @return $this
      * @throws \Exception
      */
-    public function setUploadDir($dir)
+    public function setUploadDir(string $dir)
     {
         if (!is_dir($dir) || !is_writable($dir)) {
-            throw new \Exception(__d('upload', 'Upload directory not writable'));
+            throw new Exception(__d('upload', 'Upload directory not writable'));
         }
 
         $this->setConfig('uploadDir', $dir);
@@ -139,7 +143,7 @@ class Uploader
      * @param int $sizeInBytes File size in bytes
      * @return $this
      */
-    public function setMinFileSize($sizeInBytes)
+    public function setMinFileSize(int $sizeInBytes)
     {
         $this->setConfig('minFileSize', (int)$sizeInBytes);
 
@@ -152,7 +156,7 @@ class Uploader
      * @param int $sizeInBytes File size in bytes
      * @return $this
      */
-    public function setMaxFileSize($sizeInBytes)
+    public function setMaxFileSize(int $sizeInBytes)
     {
         $this->setConfig('maxFileSize', (int)$sizeInBytes);
 
@@ -162,10 +166,10 @@ class Uploader
     /**
      * Allowed upload file mime type(s)
      *
-     * @param string|array $val Allowed mime type(s)
+     * @param array|string $val Allowed mime type(s)
      * @return $this
      */
-    public function setMimeTypes($val)
+    public function setMimeTypes(string|array $val)
     {
         $this->setConfig('mimeTypes', $val);
 
@@ -178,7 +182,7 @@ class Uploader
      * @param string $val Filename with file extension
      * @return $this
      */
-    public function setSaveAs($val)
+    public function setSaveAs(string $val)
     {
         $this->setConfig('saveAs', $val);
 
@@ -188,10 +192,10 @@ class Uploader
     /**
      * Allowed upload file extension(s)
      *
-     * @param string|array $ext Allowed file extensions
+     * @param array|string $ext Allowed file extensions
      * @return $this
      */
-    public function setFileExtensions($ext)
+    public function setFileExtensions(string|array $ext)
     {
         $this->setConfig('fileExtensions', $ext);
 
@@ -204,7 +208,7 @@ class Uploader
      * @param bool $enable Enable flag
      * @return $this
      */
-    public function enableHashFilename($enable)
+    public function enableHashFilename(bool $enable)
     {
         $this->setConfig('hashFilename', (bool)$enable);
 
@@ -217,7 +221,7 @@ class Uploader
      * @param bool $enable Enable flag
      * @return $this
      */
-    public function enableUniqueFilename($enable)
+    public function enableUniqueFilename(bool $enable)
     {
         $this->setConfig('uniqueFilename', (bool)$enable);
 
@@ -227,28 +231,31 @@ class Uploader
     /**
      * Perform upload
      *
-     * @param array $uploadData Upload data
+     * @param \Laminas\Diactoros\UploadedFile|\Psr\Http\Message\UploadedFileInterface|array $uploadData Upload data
      * @param array $options Upload options
      * @return array
      * @throws \Exception
      */
-    public function upload($uploadData = null, $options = []): array
+    public function upload(mixed $uploadData = null, array $options = []): array
     {
         $this->_result = null;
         $uploadData = $uploadData ?: $this->_data;
         $options = array_merge(['exceptions' => false], $options);
 
-        if ($this->_config['multiple']) {
-            $this->_result = $this->_uploadMultiple($uploadData, $options['exceptions']);
-        } else {
-            $this->_result = $this->_upload($uploadData, $options['exceptions']);
+        if (!$uploadData || empty($uploadData)) {
+            throw new UploadException(self::UPLOAD_ERR_NO_FILE);
         }
+
+        if ($this->_config['multiple']) {
+            return $this->_result = $this->_uploadMultiple($uploadData, $options['exceptions']);
+        }
+        $this->_result = $this->_upload($uploadData, $options['exceptions']);
 
         return $this->_result;
     }
 
     /**
-     * @return null|array
+     * @return array|null
      */
     public function getResult(): ?array
     {
@@ -261,7 +268,7 @@ class Uploader
      * @return array
      * @throws \Exception
      */
-    protected function _uploadMultiple($data, $throwExceptions = false): array
+    protected function _uploadMultiple(array $data, bool $throwExceptions = false): array
     {
         $result = [];
         foreach ($data as $_data) {
@@ -272,12 +279,12 @@ class Uploader
     }
 
     /**
-     * @param array|\Laminas\Diactoros\UploadedFile|\Psr\Http\Message\UploadedFileInterface $upload Upload data
+     * @param \Laminas\Diactoros\UploadedFile|\Psr\Http\Message\UploadedFileInterface|array $upload Upload data
      * @param bool $throwExceptions If TRUE throws exception instead of returning an upload_err. Defaults to FALSE
      * @return array
      * @throws \Exception
      */
-    protected function _upload($upload, $throwExceptions = false): array
+    protected function _upload($upload, bool $throwExceptions = false): array
     {
         try {
             if (is_array($upload)) {
@@ -285,7 +292,7 @@ class Uploader
                     throw new UploadException($upload['error']);
                 }
 
-                $upload = new \Laminas\Diactoros\UploadedFile(
+                $upload = new UploadedFile(
                     $upload['tmp_name'] ?? null,
                     $upload['size'] ?? 0,
                     $upload['error'] ?? 0,
@@ -294,12 +301,12 @@ class Uploader
                 );
             }
             if (!($upload instanceof UploadedFileInterface)) {
-                throw new \Exception('Invalid upload data');
+                throw new Exception('Invalid upload data');
             }
 
             $this->_validateUpload($upload);
             $result = $this->_processUpload($upload);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             if ($throwExceptions === true) {
                 throw $ex;
             }
@@ -334,16 +341,18 @@ class Uploader
         //@TODO D.R.Y.
         if (!is_dir($config['uploadDir']) || !is_writeable($config['uploadDir'])) {
             //$upload['error'] = UPLOAD_ERR_CANT_WRITE;
-            //debug('Uploader: Upload directory is not writable (' . $config['uploadDir'] . ')');
+            Log::critical('Uploader: Upload directory is not writable (' . $config['uploadDir'] . ')', ['upload']);
             throw new UploadException(UPLOAD_ERR_CANT_WRITE);
         }
 
         // validate size limits and mime type
         if ($upload->getSize() < $config['minFileSize']) {
             throw new UploadException(self::UPLOAD_ERR_MIN_FILE_SIZE);
-        } elseif ($upload->getSize() > $config['maxFileSize']) {
+        }
+        if ($upload->getSize() > $config['maxFileSize']) {
             throw new UploadException(self::UPLOAD_ERR_MAX_FILE_SIZE);
-        } elseif (!self::validateMimeType($upload->getClientMediaType(), $config['mimeTypes'])) {
+        }
+        if (!self::validateMimeType($upload->getClientMediaType(), $config['mimeTypes'])) {
             throw new UploadException(self::UPLOAD_ERR_MIME_TYPE);
         }
 
@@ -413,7 +422,7 @@ class Uploader
         //move uploaded file to target location
         try {
             $upload->moveTo($target);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             Log::critical($ex->getMessage(), ['upload', 'uploader']);
             throw new UploadException(self::UPLOAD_ERR_STORE_UPLOAD);
         }
@@ -465,7 +474,7 @@ class Uploader
      * @param array|string $allowed List of allowed mime types
      * @return bool
      */
-    public static function validateMimeType($mime, $allowed = []): bool
+    public static function validateMimeType(string $mime, array|string $allowed = []): bool
     {
         if (is_string($allowed)) {
             if ($allowed == '*') {
@@ -498,7 +507,7 @@ class Uploader
      * @param array|string $allowed List of allowed extensions. Use '*' for all extensions
      * @return bool
      */
-    public static function validateFileExtension($ext, $allowed = []): bool
+    public static function validateFileExtension(string $ext, array|string $allowed = []): bool
     {
         if (is_string($allowed)) {
             if ($allowed == '*') {

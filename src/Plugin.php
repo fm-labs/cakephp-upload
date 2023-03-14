@@ -1,17 +1,13 @@
 <?php
+declare(strict_types=1);
+
 namespace Upload;
 
-use Cake\Core\BasePlugin;
-
-class Plugin extends BasePlugin
+/**
+ * Backward compatibility plugin class.
+ *
+ * @deprecated Use UploadPlugin class instead.
+ */
+class Plugin extends UploadPlugin
 {
-    /**
-     * @var bool
-     */
-    public $routesEnabled = false;
-
-    /**
-     * @var bool
-     */
-    public $bootstrapEnabled = false;
 }
