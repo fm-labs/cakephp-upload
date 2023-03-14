@@ -44,8 +44,9 @@ class Uploader
         'fileExtensions' => '*',
         'multiple' => false,
         'slug' => '_',
+        'slugFilename' => false,
         'hashFilename' => false,
-        'uniqueFilename' => true,
+        'uniqueFilename' => false,
         'overwrite' => false,
         'saveAs' => null, // filename override
         //'pattern' => false, // @todo Implement me
@@ -380,19 +381,18 @@ class Uploader
         //@TODO Fire event 'Upload.beforeUpload'
 
         // filename
-        $uploadName = strtolower(trim($upload->getClientFilename()));
+        $uploadName = $upload->getClientFilename();
         [$filename, $ext, $dotExt] = self::splitBasename($uploadName);
-        $filename = Text::slug($filename, $config['slug']);
         $ext = strtolower($ext);
         $dotExt = strtolower($dotExt);
 
-        // filename override
-        if ($config['saveAs']) {
-            [$filename, $ext, $dotExt] = self::splitBasename($config['saveAs']);
+        // slug filename
+        if ($config['slugFilename']) {
+            $filename = Text::slug($filename, $config['slug']);
         }
 
         // hash filename
-        if ($config['hashFilename'] && !$config['saveAs']) {
+        if ($config['hashFilename']) {
             $filename = sha1($filename);
         }
 
@@ -400,6 +400,12 @@ class Uploader
         if ($config['uniqueFilename']) {
             $filename = uniqid($filename . $config['slug'], false);
         }
+
+        // filename override
+        if ($config['saveAs']) {
+            [$filename, $ext, $dotExt] = self::splitBasename($config['saveAs']);
+        }
+
 
         $basename = $filename . $dotExt;
         $path = $config['uploadDir'];
