@@ -74,9 +74,9 @@ class UploadForm extends Form
     protected function _execute(array $data): bool
     {
         $this->_result = $this->getUploader()
-            ->upload($data['upload_file']);
+            ->upload($data['upload_file'], ['exceptions' => true]);
 
-        return $this->_result ? true : false;
+        return (bool)$this->_result;
     }
 
     /**
